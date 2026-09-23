@@ -1,4 +1,7 @@
 import { UserDocument } from "#/model/user";
+import { Request } from "express";
+import moment from "moment";
+import History from "#/model/history";
 
 export const generateToken = (length = 6) => {
     let opt = ""
@@ -9,23 +12,23 @@ export const generateToken = (length = 6) => {
     return opt
 }
 export const currentday = () => {
-  const now = new Date();
+    const now = new Date();
 
-  const startOfDay = new Date(Date.UTC(
-    now.getUTCFullYear(),
-    now.getUTCMonth(),
-    now.getUTCDate(),
-    0, 0, 0, 0
-  ));
+    const startOfDay = new Date(Date.UTC(
+        now.getUTCFullYear(),
+        now.getUTCMonth(),
+        now.getUTCDate(),
+        0, 0, 0, 0
+    ));
 
-  const endOfDay = new Date(Date.UTC(
-    now.getUTCFullYear(),
-    now.getUTCMonth(),
-    now.getUTCDate(),
-    23, 59, 59, 999
-  ));
+    const endOfDay = new Date(Date.UTC(
+        now.getUTCFullYear(),
+        now.getUTCMonth(),
+        now.getUTCDate(),
+        23, 59, 59, 999
+    ));
 
-  return { startOfDay, endOfDay };
+    return { startOfDay, endOfDay };
 };
 export const formatProfile = (user: UserDocument) => {
     return {
@@ -38,4 +41,46 @@ export const formatProfile = (user: UserDocument) => {
         followings: user.followings.length
     }
 
+}
+
+export const getUsersPreviousHistory = async (req: Request): Promise<string[]> => {
+    const [result] = await History.aggregate([
+        { $match: { owner: req.user?.id } },
+        {
+            $unwind: "$all"
+        },
+        {
+            $match: {
+                "all.date": {
+                    $gte: moment().subtract(30, "days").toDate()
+                }
+            }
+        }, {
+            $group: {
+                _id: "$all.audio"
+            }
+        },
+        {
+            $lookup: {
+                from: "audios",
+                localField: "_id",
+                foreignField: "_id",
+                as: "audioData"
+
+            }
+        },
+        {
+            $unwind: "$audioData"
+        },
+        {
+            $group: {
+                _id: null,
+                category: { $addToSet: "$audioData.category" }
+            }
+        }
+    ]);
+    if (result) {
+        return result.category;
+    }
+    return [];
 }

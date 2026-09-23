@@ -1,4 +1,4 @@
-import { toggleFavorite ,getFavorites,getIsFavorite} from "#/controllers/favorite";
+import { toggleFavorite, getFavorites, getIsFavorite } from "#/controllers/favorite";
 import { isVerified, mustAuth } from "#/middleware/auth";
 import { Router } from "express";
 

@@ -3,7 +3,7 @@ import Audio from "#/model/audio";
 import Favorite from "#/model/favorite";
 import Playlist from "#/model/playlist";
 import { RequestHandler } from "express";
-import { isValidObjectId } from "mongoose";
+import { isValidObjectId, Types } from "mongoose";
 
 
 export const createPlaylist: RequestHandler = async (req: createPlaylistRequest, res) => {
@@ -20,7 +20,7 @@ export const createPlaylist: RequestHandler = async (req: createPlaylistRequest,
         visibility
     })
 
-    if (resId) newPlaylist.items = [resId as any];
+    if (resId) newPlaylist.items = [new Types.ObjectId(resId) as any];
     await newPlaylist.save();
 
     res.status(201).json({
@@ -104,11 +104,11 @@ export const getAudios: RequestHandler = async (req, res) => {
     const { playlistId } = req.params;
     if (!isValidObjectId(playlistId)) return res.status(422).json({ error: "invalid playlist Id :)" })
 
-    const playlist = await Playlist.findOne({ _id: playlistId, owner: req.user?.id }).populate<{items:populateFavList[]}>({
+    const playlist = await Playlist.findOne({ _id: playlistId, owner: req.user?.id }).populate<{ items: populateFavList[] }>({
         path: "items",
         populate: {
             path: "owner",
-            select:"name"
+            select: "name"
         }
     });
     if (!playlist) return res.json({ list: [] });

@@ -12,9 +12,12 @@ import * as jwt from "jsonwebtoken"
 import formidable from "formidable";
 import cloudinary from "#/cloude";
 import { RequesWithFiles } from "#/middleware/fileParser";
-import { error } from "console";
+
+
 export const create: RequestHandler = async (req: createUser, res) => {
     const { name, email, password } = req.body;
+    const oldUser = await User.findOne({ email });
+    if (oldUser) return res.status(403).json({ error: "Email is already in use" });
     const user = await User.create({ name, email, password });
     const token = generateToken();
     await EmailValidationToken.create({ owner: user._id, token });
@@ -43,6 +46,7 @@ export const sendReVerificationToken: RequestHandler = async (req: RevalidateEma
     if (!isValidObjectId(userId)) return res.status(404).json({ error: "Invalid userId :)" })
     const user = await User.findById(userId);
     if (!user) return res.status(403).json({ error: "Invaild user" })
+    if (user.verified) return res.status(422).json({ error: "Your account is already verified :)" })
     await EmailValidationToken.findOneAndDelete({ owner: userId });
     const token = generateToken();
     await EmailValidationToken.create({
