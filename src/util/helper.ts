@@ -3,7 +3,7 @@ import { Request } from "express";
 import moment from "moment";
 import History from "#/model/history";
 
-export const generateToken = (length = 6) => {
+export const generateToken = (length = 5) => {
     let opt = ""
     for (var i = 0; i <= length; i++) {
         const digtal = Math.floor(Math.random() * 10);

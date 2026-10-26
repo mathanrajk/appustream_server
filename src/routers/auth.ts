@@ -13,7 +13,7 @@ router.post("/forgot-password", generateForgetPasswordLink)
 router.post("/verify-pass-reset-token", validate(EmailVerificationBody), isValidPassRestToken, grandValid)
 router.post("/update-password", validate(PasswordRestLink), isValidPassRestToken, updatePassword)
 router.post("/sign-in", validate(SignInValidationSchema), signin)
-router.post("/is-auth", mustAuth, sentProfile);
+router.get("/is-auth", mustAuth, sentProfile);
 router.post("/update-profile", mustAuth, fileParser, updateProfile)
 router.post("/log-out", mustAuth, logout)
 

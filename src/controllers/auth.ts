@@ -109,8 +109,8 @@ export const signin: RequestHandler = async (req, res) => {
             email: user.email,
             verified: user.verified,
             avatar: user.avatar?.url,
-            followers: user.followers,
-            followings: user.followings
+            followers: user.followers.length,
+            followings: user.followings.length
         },
         token
     })
@@ -119,7 +119,7 @@ export const signin: RequestHandler = async (req, res) => {
 export const updateProfile: RequestHandler = async (req: RequesWithFiles, res) => {
     const { name } = req.body;
     const avatar = req.files?.avatar as formidable.File;
-
+    console.log(avatar)
     const user = await User.findById(req.user?.id);
     if (!user) return res.status(404).json({ error: "user not found" });
 

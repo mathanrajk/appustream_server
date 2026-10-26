@@ -49,7 +49,7 @@ export const toggleFavorite: RequestHandler = async (req, res) => {
 export const getFavorites: RequestHandler = async (req, res) => {
     const userId = req.user?.id;
     const {limit="20", pageNo ="0"} = req.query as paginationQuery
-    const favorite = await Favorite.aggregate([
+    const audio = await Favorite.aggregate([
         {$match:{owner :userId}},
         {$project:{
             audioIds:{
@@ -85,16 +85,16 @@ export const getFavorites: RequestHandler = async (req, res) => {
             about:"$audioInfo.about",
             file:"$audioInfo.file.url",
             poster:"$audioInfo.poster.url",
-            onwer:{
+            owner:{
                 name :"$ownerInfo.name",
                 id:"$ownerInfo._id",
             }
         }
     }
     ])
+ if(!audio) return res.json({ audio:[] })
 
-
-     res.json({ favorite })
+     res.json({ audio })
 
 }
 export const getIsFavorite: RequestHandler = async (req, res) => {
