@@ -59,7 +59,6 @@ export const updatePlaylist: RequestHandler = async (req: updatePlaylistRequest,
 }
 export const removePlaylist: RequestHandler = async (req, res) => {
     const { playlistId, resId, all } = req.query;
-
     if (!isValidObjectId(playlistId)) return res.status(422).json({ error: "Invalid playlist ID :)" });
     if (all === "yes") {
         const playlist = await Playlist.findOneAndDelete({
