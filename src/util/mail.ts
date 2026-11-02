@@ -10,11 +10,25 @@ import { generateTemplate } from "#/mail/template";
 import { brevo } from "#/mailSender";
 
 // Prefer a hosted logo URL; otherwise inline the file as a data URI.
-const logoSrc =
-  EMAIL_LOGO_URL ||
-  `data:image/png;base64,${fs
-    .readFileSync(path.join(__dirname, "../mail/logo.png"))
-    .toString("base64")}`;
+// Works both in dev (src/util -> src/mail) and in the compiled build
+// (dist/util -> dist/mail, with a fallback to the source file in the repo).
+const inlineLogo = (): string => {
+  const candidates = [
+    path.join(__dirname, "../mail/logo.png"),
+    path.join(__dirname, "../../src/mail/logo.png"),
+  ];
+  for (const file of candidates) {
+    try {
+      return `data:image/png;base64,${fs.readFileSync(file).toString("base64")}`;
+    } catch {
+      // try the next candidate
+    }
+  }
+  console.warn("logo.png not found, emails will be sent without an inline logo");
+  return "";
+};
+
+const logoSrc = EMAIL_LOGO_URL || inlineLogo();
 
 interface IProfile {
   name: string;

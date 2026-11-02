@@ -1,7 +1,4 @@
 export const MONGO_URI = process.env.MONGO_URI as string
-export const Mailer_User = process.env.Mailer_User as string
-export const Mailer_Pass = process.env.Mailer_Pass as string
-export const Mailer_mail = process.env.Mailer_mail as string
 export const PASSWORD_RESET_LINK = process.env.PASSWORD_RESET_LINK as string
 export const SIGN_IN_LINK = process.env.SIGN_IN_LINK as string
 export const SIGN_IN_URL = process.env.SIGN_IN_URL as string
