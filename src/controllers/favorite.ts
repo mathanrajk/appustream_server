@@ -13,7 +13,6 @@ export const toggleFavorite: RequestHandler = async (req, res) => {
     const audio = await Audio.findById(audioId);
     if (!audio) return res.status(404).json({ error: "Resources not found!" });
     const alreadyExists = await Favorite.findOne({ owner: req.user?.id, items: audioId });
-    console.log(alreadyExists)
     if (alreadyExists) {
         await Favorite.updateOne({ owner: req.user?.id }, { $pull: { items: audioId } })
         status = "removed"

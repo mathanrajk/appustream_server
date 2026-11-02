@@ -1,34 +1,10 @@
-import fs from "fs";
-import path from "path";
 import {
   BREVO_SENDER_EMAIL,
   BREVO_SENDER_NAME,
-  EMAIL_LOGO_URL,
   SIGN_IN_LINK,
 } from "#/util/variable";
 import { generateTemplate } from "#/mail/template";
 import { brevo } from "#/mailSender";
-
-// Prefer a hosted logo URL; otherwise inline the file as a data URI.
-// Works both in dev (src/util -> src/mail) and in the compiled build
-// (dist/util -> dist/mail, with a fallback to the source file in the repo).
-const inlineLogo = (): string => {
-  const candidates = [
-    path.join(__dirname, "../mail/logo.png"),
-    path.join(__dirname, "../../src/mail/logo.png"),
-  ];
-  for (const file of candidates) {
-    try {
-      return `data:image/png;base64,${fs.readFileSync(file).toString("base64")}`;
-    } catch {
-      // try the next candidate
-    }
-  }
-  console.warn("logo.png not found, emails will be sent without an inline logo");
-  return "";
-};
-
-const logoSrc = EMAIL_LOGO_URL || inlineLogo();
 
 interface IProfile {
   name: string;
@@ -49,7 +25,6 @@ const sendMail = async ({ to, subject, html }: IMail) => {
     sender: { name: BREVO_SENDER_NAME, email: BREVO_SENDER_EMAIL },
     to: [{ email: to }],
   });
-  console.log("Email sent:", result);
   return result;
 };
 
@@ -75,7 +50,6 @@ export const sendVerificationMail = async (
         title: `Welcome to Tunexa, ${name}! 🎧`,
         message: welcomeMessage,
         link: "#",
-        logo: logoSrc,
         btnTitle: token,
       }),
     });
@@ -110,7 +84,6 @@ export const sendForgotPasswordLink = async (options: Options) => {
         title: `Welcome to Tunexa! 🎧 Your daily soundtrack awaits; jump right in, or click Forgot password? if you need help logging in.`,
         message: forgotPasswordMessage,
         link: link,
-        logo: logoSrc,
         btnTitle: "Rest Link",
       }),
     });
@@ -142,7 +115,6 @@ export const sentPasswordRestSuccessEmail = async (
         title: `Password Reset Successful! 🎧 Your daily soundtrack awaits; log in with your new password and jump right in.`,
         message: resetSuccessMessage,
         link: SIGN_IN_LINK,
-        logo: logoSrc,
         btnTitle: "SIGN IN",
       }),
     });

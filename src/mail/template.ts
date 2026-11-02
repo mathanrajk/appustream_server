@@ -3,7 +3,6 @@ interface Options {
   message: string;
   link: string;
   btnTitle: string;
-  logo?: string;
 }
 
 export const generateTemplate = ({
@@ -11,7 +10,6 @@ export const generateTemplate = ({
   message,
   link,
   btnTitle,
-  logo,
 }: Options) => `
 <!DOCTYPE html>
 <html lang="en">
@@ -46,41 +44,6 @@ export const generateTemplate = ({
           >
             <tr>
               <td style="padding: 32px">
-                ${
-                  logo
-                    ? `
-                <table
-                  role="presentation"
-                  align="center"
-                  cellpadding="0"
-                  cellspacing="0"
-                  style="margin: 0 auto 22px"
-                >
-                  <tr>
-                    <td
-                      style="
-                        background-color: #0b0d14;
-                        border-radius: 16px;
-                        padding: 14px 24px;
-                        text-align: center;
-                      "
-                    >
-                      <img
-                        src="${logo}"
-                        alt="Tunexa"
-                        width="140"
-                        style="
-                          display: block;
-                          width: 140px;
-                          height: auto;
-                          border: 0;
-                        "
-                      />
-                    </td>
-                  </tr>
-                </table>`
-                    : ""
-                }
                 <h1
                   style="
                     margin: 0 0 16px;
