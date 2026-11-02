@@ -10,6 +10,7 @@
   "keywords": [],
   "type": "commonjs",
   "dependencies": {
+    "@getbrevo/brevo": "^6.2.0",
     "@types/bcrypt": "^6.0.0",
     "@types/dotenv": "^6.1.1",
     "@types/express": "^5.0.6",

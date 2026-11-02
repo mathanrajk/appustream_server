@@ -1,4 +1,4 @@
- AppuStream Server
+ Tunexa Server
  
 A lightweight streaming server for delivering music content over HTTP/WebSocket, built for fast and reliable audio playback.
  
