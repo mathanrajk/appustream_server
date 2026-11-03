@@ -24,7 +24,7 @@ const emailVerificationTokenSchema = new Schema<EmailVerificationDocumation, {},
     createdAt: {
         type: Date,
         expires: 3600,
-        default: Date.now()
+        default: Date.now
 
     }
 }, { timestamps: true });

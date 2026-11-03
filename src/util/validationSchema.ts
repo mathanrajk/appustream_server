@@ -31,6 +31,10 @@ export const PasswordRestLink = yup.object().shape({
     password: yup.string().trim().required("Password is missing !").min(8, "Password is too shart !").matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/, "Password is too simple !")
 
 })
+export const ForgotPasswordSchema = yup.object().shape({
+    email: yup.string().trim().required("Email is missing !").email("Invalid email id !")
+});
+
 export const SignInValidationSchema = yup.object().shape({
     email: yup.string().required("Email is missing !").email("Invalid email id !"),
     password: yup.string().trim().required("Password is missing !")
