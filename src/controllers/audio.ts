@@ -37,9 +37,8 @@ export const createAudio: RequestHandler = async (
   if (poster) {
     const posterRes = await cloudinary.uploader.upload(poster.filepath, {
       width: 300,
-      heigth: 300,
-      crop: "thumb",
-      gravity: "face",
+      height: 300,
+      crop: "fill",
     });
     newaudio.poster = {
       url: posterRes.secure_url,
@@ -80,9 +79,8 @@ export const updateAudio: RequestHandler = async (
 
     const posterRes = await cloudinary.uploader.upload(poster.filepath, {
       width: 300,
-      heigth: 300,
-      crop: "thumb",
-      gravity: "face",
+      height: 300,
+      crop: "fill",
     });
     audio.poster = {
       url: posterRes.secure_url,
