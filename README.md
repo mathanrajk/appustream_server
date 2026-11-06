@@ -1,100 +1,251 @@
- Tunexa Server
- 
-A lightweight streaming server for delivering music content over HTTP/WebSocket, built for fast and reliable audio playback.
- 
-## Tech Stack
- 
-- **Runtime:** Node.js (TypeScript)
+# Tunexa Server 🎧
+
+A robust REST API backend for the **Tunexa / Appu Stream** music and audio streaming application. Built with Node.js, Express 5, TypeScript, MongoDB, Cloudinary, and Brevo.
+
+---
+
+## 🚀 Tech Stack
+
+- **Runtime & Language:** Node.js (v18+) with TypeScript
 - **Framework:** Express 5
-- **Database:** MongoDB (Mongoose)
-- **Authentication:** JWT (jsonwebtoken) + bcrypt
-- **File Uploads:** Formidable
-- **Media Storage:** Cloudinary
-- **Email:** Nodemailer
-- **Validation:** Yup
-## Features
- 
-- User authentication (JWT-based) with secure password hashing
-- File/media upload handling
-- Cloud-based media storage via Cloudinary
-- Email notifications via Nodemailer
-- Request validation with Yup
-- Path aliasing support (tsconfig-paths)
-## Prerequisites
- 
-- Node.js (v18+ recommended)
-- MongoDB instance (local or hosted)
-- Cloudinary account (for media storage)
-- SMTP credentials (for email functionality)
-## Getting Started
- 
-```bash
-# 1. Clone the repository
-git clone <your-repo-url>
-cd server
- 
-# 2. Install dependencies
-npm install
- 
-# 3. Run the development server
-npm run dev
-```
- 
-The server will start with hot-reload enabled via `ts-node-dev`.
- 
-## Installation
- 
-```bash
-# Clone the repository
-git clone <your-repo-url>
-cd server
- 
-# Install dependencies
-npm install
-```
- 
-## Environment Variables
- 
-Create a `.env` file in the root directory with the following:
- 
-```env
-PORT=8989
-MONGODB_URI=your_mongodb_connection_string
-JWT_SECRET=your_jwt_secret
- 
-CLOUDINARY_CLOUD_NAME=your_cloud_name
-CLOUDINARY_API_KEY=your_api_key
-CLOUDINARY_API_SECRET=your_api_secret
- 
-SMTP_HOST=your_smtp_host
-SMTP_PORT=your_smtp_port
-SMTP_USER=your_smtp_user
-SMTP_PASS=your_smtp_password
-```
- 
-## Scripts
- 
-| Command       | Description                                  |
-|---------------|-----------------------------------------------|
-| `npm run dev`   | Start the development server with hot reload |
-| `npm run build` | Compile TypeScript to JavaScript for production |
- 
-## Project Structure
- 
+- **Database:** MongoDB with Mongoose ODM
+- **Authentication & Security:** JSON Web Tokens (JWT with multi-session token tracking) & bcrypt
+- **Media Storage & CDN:** Cloudinary (audio files & 300x300 square poster artwork)
+- **File Uploads:** Formidable (multipart form data parsing)
+- **Transactional Emails:** Brevo (`@getbrevo/brevo` API) with HTML email templates
+- **Input Validation:** Yup schema validation middleware
+- **Scheduled Automation:** `node-cron` for daily auto-generated playlists
+- **Module Resolution:** Path aliases (`#/*` mapping to `./src/*`) via `tsconfig-paths`
+
+---
+
+## ✨ Features
+
+- **Authentication & User Management:**
+  - Secure registration with bcrypt password hashing.
+  - Email verification with 6-digit OTP codes delivered via Brevo.
+  - Multi-device login support (JWT tokens stored and validated per session).
+  - Forgot password flow with secure reset link and hosted web page (`/reset-password.html`).
+  - Profile customization (name, avatar image upload).
+
+- **Audio Streaming & Management:**
+  - Upload audio tracks with audio file (`resource_type: "video"`) and optional poster cover art.
+  - Poster optimization with Cloudinary (`300x300`, `crop: "fill"`).
+  - Update audio metadata and replace poster artwork (with automatic cleanup of old Cloudinary assets).
+  - Categorized tracks (love, motivation, friendship, life, sad, happy, etc.).
+  - Fetch latest uploads and user-specific uploads.
+
+- **Playlists:**
+  - Create, edit, and delete custom playlists.
+  - Public and private visibility options.
+  - View playlist tracks and user playlists.
+
+- **Automated Playlists (Cron Job):**
+  - Daily automated background job (`0 0 * * *`) that aggregates top-liked tracks across categories into auto-generated playlists.
+
+- **Favorites & Likes:**
+  - Toggle favorite status for audio tracks.
+  - Retrieve user favorite tracks and check like status.
+
+- **Listening History:**
+  - Track playback progress and timestamps.
+  - Recently played history list with clearing capabilities.
+
+- **Social & Discovery:**
+  - Follow / unfollow creators and listeners.
+  - Public profiles with follower/following counts and public uploads.
+  - Personalized recommendation engine based on user favorite categories.
+
+---
+
+## 📁 Project Structure
+
 ```
 server/
+├── scripts/
+│   └── copy-assets.js       # Copies non-TS assets (mail templates, logo) to dist/
 ├── src/
-│   ├── index.ts        # Entry point
-│   ├── routes/         # API routes
-│   ├── controllers/    # Route controllers
-│   ├── models/         # Mongoose models
-│   ├── middleware/      # Custom middleware
-│   └── utils/           # Helper utilities
-├── tsconfig.json
+│   ├── @types/              # Custom TypeScript declarations & request augmentations
+│   ├── cloude/              # Cloudinary SDK configuration
+│   ├── controllers/         # Business logic & request handlers
+│   │   ├── audio.ts         # Audio upload, update, and feed
+│   │   ├── auth.ts          # Authentication, OTP, and password reset
+│   │   ├── favorite.ts      # Like and favorite operations
+│   │   ├── history.ts       # Playback history tracking
+│   │   ├── playlist.ts      # User playlist operations
+│   │   └── profile.ts       # User profiles, following, and recommendations
+│   ├── db/                  # MongoDB connection setup
+│   ├── mail/                # Email HTML templates and embedded logo assets
+│   ├── mailSender/          # Brevo client configuration and verification
+│   ├── middleware/          # Express middleware (auth, file parsing, validation, error)
+│   ├── model/               # Mongoose data schemas and models
+│   │   ├── audio.ts
+│   │   ├── autoGeneratedPlaylist.ts
+│   │   ├── emailValidationToken.ts
+│   │   ├── favorite.ts
+│   │   ├── forgotPasswordToken.ts
+│   │   ├── history.ts
+│   │   ├── playlist.ts
+│   │   └── user.ts
+│   ├── public/              # Static public assets & password reset web page
+│   ├── routers/             # Express route definitions
+│   │   ├── audio.ts         # /audio routes
+│   │   ├── auth.ts          # /auth routes
+│   │   ├── favorite.ts      # /favorite routes
+│   │   ├── history.ts       # /history routes
+│   │   ├── playlist.ts      # /playlist routes
+│   │   └── profile.ts       # /profile routes
+│   ├── util/                # Helpers, audio categories, schedules, validation schemas
+│   └── index.ts             # Application entry point
 ├── package.json
-└── .env
+├── tsconfig.json
+└── README.md
 ```
- 
-## License
- 
-This project is licensed under the ISC License. 
+
+---
+
+## ⚙️ Environment Variables
+
+Create a `.env` file in the `server` directory with the following variables:
+
+```env
+# Server
+PORT=8989
+
+# Database
+MONGO_URI=mongodb+srv://<username>:<password>@cluster.mongodb.net/<database_name>
+
+# JWT Authentication
+# Used as the secret key for signing & verifying JWT tokens
+SIGN_IN_URL=your_strong_jwt_secret_key
+
+# Links
+# Web page URL where users submit a new password
+PASSWORD_RESET_LINK=https://your-domain.com/reset-password.html
+# Mobile / frontend deep links
+SIGN_IN_LINK=https://your-domain.com/sign-in
+
+# Cloudinary (Media Storage)
+Cloud_Name=your_cloudinary_cloud_name
+Cloud_Api_Key=your_cloudinary_api_key
+Cloud_Api_Secret=your_cloudinary_api_secret
+
+# Brevo (Transactional Email)
+# API key must start with "xkeysib-"
+BREVO_API_KEY=xkeysib-your_brevo_v3_api_key
+BREVO_SENDER_EMAIL=your_verified_sender_email@example.com
+BREVO_SENDER_NAME=Tunexa
+
+# Optional: Public URL for email branding logo
+EMAIL_LOGO_URL=https://your-domain.com/logo.png
+```
+
+---
+
+## 🛠️ Getting Started
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) (v18 or higher recommended)
+- [MongoDB](https://www.mongodb.com/) instance (local or MongoDB Atlas)
+- [Cloudinary](https://cloudinary.com/) account
+- [Brevo](https://www.brevo.com/) account (with a verified sender email and v3 API key)
+
+### Installation
+
+1. **Clone the repository:**
+   ```bash
+   git clone <repository-url>
+   cd server
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+3. **Configure Environment:**
+   Create a `.env` file based on the [Environment Variables](#️-environment-variables) section above.
+
+4. **Start the development server:**
+   ```bash
+   npm run dev
+   ```
+   The server runs with hot reload via `ts-node-dev` on `http://localhost:8989`.
+
+5. **Build for production:**
+   ```bash
+   npm run build
+   ```
+   Compiles TypeScript to `dist/`, resolves path aliases, and copies static mail assets.
+
+---
+
+## 📡 API Overview
+
+### 🔐 Authentication (`/auth`)
+| Method | Endpoint | Description | Auth Required |
+| :--- | :--- | :--- | :---: |
+| `POST` | `/auth/create` | Register new user & send OTP verification email | No |
+| `POST` | `/auth/verify-email` | Verify email with OTP token | No |
+| `POST` | `/auth/re-verify-email` | Resend verification OTP token | No |
+| `POST` | `/auth/sign-in` | Authenticate user & issue JWT | No |
+| `GET`  | `/auth/is-auth` | Verify current JWT & retrieve authenticated profile | Yes |
+| `POST` | `/auth/forgot-password` | Generate reset token & send reset link via email | No |
+| `POST` | `/auth/verify-pass-reset-token` | Validate password reset token | No |
+| `POST` | `/auth/update-password` | Set new password with valid reset token | No |
+| `POST` | `/auth/update-profile` | Update profile name and avatar image | Yes |
+| `POST` | `/auth/log-out` | Invalidate current session token | Yes |
+
+### 🎵 Audio Management (`/audio`)
+| Method | Endpoint | Description | Auth Required |
+| :--- | :--- | :--- | :---: |
+| `POST`   | `/audio/create` | Upload new audio track (audio file + poster art) | Yes (Verified) |
+| `PATCH`  | `/audio/:audioId` | Update audio track details and/or poster art | Yes (Verified) |
+| `GET`    | `/audio/latest` | Get latest uploaded audio tracks | No |
+| `DELETE` | `/audio/:audioId` | Delete uploaded audio track & remove Cloudinary assets | Yes |
+
+### 📂 Playlists (`/playlist`)
+| Method | Endpoint | Description | Auth Required |
+| :--- | :--- | :--- | :---: |
+| `POST`   | `/playlist/create` | Create a new playlist (public or private) | Yes (Verified) |
+| `PATCH`  | `/playlist/` | Update playlist title, visibility, or audios | Yes (Verified) |
+| `DELETE` | `/playlist/` | Delete playlist by ID | Yes |
+| `GET`    | `/playlist/by-profile` | Get playlists belonging to authenticated user | Yes |
+| `GET`    | `/playlist/:playlistId` | Get audios inside a playlist | Yes |
+
+### ❤️ Favorites (`/favorite`)
+| Method | Endpoint | Description | Auth Required |
+| :--- | :--- | :--- | :---: |
+| `POST` | `/favorite/` | Toggle favorite / like on an audio track | Yes (Verified) |
+| `GET`  | `/favorite/` | Fetch all favorite tracks for the user | Yes |
+| `GET`  | `/favorite/is-fav` | Check if a specific audio track is favorited | Yes |
+
+### 📜 History (`/history`)
+| Method | Endpoint | Description | Auth Required |
+| :--- | :--- | :--- | :---: |
+| `POST`   | `/history/` | Record/update playback history and progress | Yes |
+| `GET`    | `/history/` | Fetch full playback history | Yes |
+| `GET`    | `/history/recently-played` | Fetch recently played tracks | Yes |
+| `DELETE` | `/history/` | Clear playback history | Yes |
+
+### 👤 Profiles & Discovery (`/profile`)
+| Method | Endpoint | Description | Auth Required |
+| :--- | :--- | :--- | :---: |
+| `GET`  | `/profile/info/:profileId` | Get public profile details | No |
+| `GET`  | `/profile/uploads` | Get my uploaded tracks | Yes |
+| `GET`  | `/profile/uploads/:profileId` | Get public uploads by user ID | No |
+| `GET`  | `/profile/playlist/:profileId` | Get public playlists by user ID | No |
+| `GET`  | `/profile/recommended` | Get personalized audio recommendations | Optional |
+| `GET`  | `/profile/auto-generated-playlist` | Fetch daily auto-generated playlists | Yes |
+| `POST` | `/profile/update-follower/:profileId` | Follow / unfollow a user | Yes |
+| `GET`  | `/profile/is-following/:profileId` | Check if following a user | Yes |
+| `GET`  | `/profile/followers` | Get current user's followers | Yes |
+| `GET`  | `/profile/followers/:profileId` | Get public followers of a user | Yes |
+| `GET`  | `/profile/followings` | Get users currently followed | Yes |
+
+---
+
+## 📜 License
+
+This project is licensed under the ISC License.
