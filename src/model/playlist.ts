@@ -27,7 +27,7 @@ const PlaylistSchema= new Schema<PlaylistDocument>({
     ],
     visibility:{
         type:String,
-        emun:["public","private","auto"],
+        enum:["public","private","auto"],
         default:"public"
     }
 
@@ -35,6 +35,6 @@ const PlaylistSchema= new Schema<PlaylistDocument>({
     timestamps:true
 });
 
-const playlist = models.playlist||model("Playlist",PlaylistSchema);
+const playlist = models.Playlist || model("Playlist",PlaylistSchema);
 
 export default playlist as Model<PlaylistDocument>;

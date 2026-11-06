@@ -2,6 +2,7 @@ import { UserDocument } from "#/model/user";
 import { Request } from "express";
 import moment from "moment";
 import History from "#/model/history";
+import { Types } from "mongoose";
 
 export const generateToken = (length = 5) => {
     let opt = ""
@@ -13,7 +14,6 @@ export const generateToken = (length = 5) => {
 }
 export const currentday = () => {
     const now = new Date();
-
     const startOfDay = new Date(Date.UTC(
         now.getUTCFullYear(),
         now.getUTCMonth(),
@@ -44,8 +44,9 @@ export const formatProfile = (user: UserDocument) => {
 }
 
 export const getUsersPreviousHistory = async (req: Request): Promise<string[]> => {
+    if (!req.user?.id) return [];
     const [result] = await History.aggregate([
-        { $match: { owner: req.user?.id } },
+        { $match: { owner: new Types.ObjectId(req.user.id) } },
         {
             $unwind: "$all"
         },

@@ -23,6 +23,6 @@ const AutoPlaylistSchema= new Schema<AutoPlaylistDocument>({
     timestamps:true
 });
 
-const autoPlaylist = models.playlist||model("autoPlaylist",AutoPlaylistSchema);
+const autoPlaylist = models.autoPlaylist || model("autoPlaylist", AutoPlaylistSchema);
 
 export default autoPlaylist as Model<AutoPlaylistDocument>;
