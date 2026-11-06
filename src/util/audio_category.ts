@@ -20,6 +20,9 @@ export const category = [
   "loneliness",
   "gratitude",
   "god",
+  "vibes",
+  "mass",
+  "trend",
   "other"
 ]
 export type categoriesTypes =
@@ -44,4 +47,7 @@ export type categoriesTypes =
   |"loneliness"
   |"gratitude"
   |"god"
+  |"vibes"
+  |"mass"
+  |"trend"
   |"other"
